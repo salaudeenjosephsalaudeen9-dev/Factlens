@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FACTLENS Evidence Library</title><style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f2f6f9;color:#10243a}
+header{background:#10243a;color:white;padding:22px}
+header h2{margin:0;letter-spacing:2px}
+header p{color:#00c8b5}
+main{max-width:800px;margin:auto;padding:18px}
+.card{background:white;padding:20px;margin:15px 0;border-radius:12px}
+input,textarea,select{width:100%;padding:12px;margin:8px 0;border:1px solid #ccd7df;border-radius:8px}
+textarea{min-height:90px}
+button{background:#00c8b5;color:#10243a;padding:13px;border:0;border-radius:8px;font-weight:bold;cursor:pointer}
+.source{background:#edf5f7;padding:14px;margin:12px 0;border-radius:8px;overflow-wrap:anywhere}
+.source a{color:#087f86}
+.small{font-size:12px;color:#617487}
+</style></head><body><header>
+<h2>FACTLENS</h2>
+<p>EVIDENCE LIBRARY</p>
+</header><main><div class="card">
+<h2>📚 Evidence Library</h2>
+<p>Save public sources and organise your research findings.</p>
+</div><div class="card">
+<h3>➕ Add New Evidence</h3><label>Research case title</label>
+<input id="caseTitle" placeholder="Enter your research case title">
+
+<label>Source title</label>
+<input id="sourceTitle" placeholder="Example: Official business website">
+
+<label>Public source URL</label>
+<input id="sourceURL" type="url" placeholder="https://example.com">
+
+<label>Research finding</label>
+
+<textarea id="finding" placeholder="What information does this source provide?"></textarea><label>Evidence assessment</label>
+<select id="status">
+
+<option>Unverified</option>
+<option>Corroborated</option>
+<option>Contradicted</option>
+<option>Opinion or interpretation</option>
+</select><button onclick="saveEvidence()">SAVE EVIDENCE</button>
+
+</div><div class="card">
+<h3>🔎 Saved Evidence</h3>
+<div id="evidenceList">No evidence saved yet.</div>
+</div></main><script>
+
+let evidence=JSON.parse(localStorage.getItem("factlensEvidence")||"[]");
+
+function saveEvidence(){
+
+let caseTitle=document.getElementById("caseTitle").value.trim();
+let title=document.getElementById("sourceTitle").value.trim();
+let url=document.getElementById("sourceURL").value.trim();
+let finding=document.getElementById("finding").value.trim();
+let status=document.getElementById("status").value;
+
+if(!caseTitle||!title||!finding){
+alert("Please complete the case title, source title and finding.");
+return;
+}
+
+if(url){
+try{
+let parsed=new URL(url);
+if(!["http:","https:"].includes(parsed.protocol))throw Error();
+}catch{
+alert("Enter a valid public webpage URL beginning with https://");
+return;
+}
+}
+
+evidence.unshift({
+caseTitle,
+title,
+url,
+finding,
+status,
+date:new Date().toLocaleDateString()
+});
+
+localStorage.setItem("factlensEvidence",JSON.stringify(evidence));
+
+document.getElementById("caseTitle").value="";
+document.getElementById("sourceTitle").value="";
+document.getElementById("sourceURL").value="";
+document.getElementById("finding").value="";
+
+displayEvidence();
+}
+
+function escapeHTML(value){
+return String(value).replace(/[&<>"']/g,function(c){
+return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+});
+}
+
+function displayEvidence(){
+
+let list=document.getElementById("evidenceList");
+
+if(evidence.length===0){
+list.innerHTML="No evidence saved yet.";
+return;
+}
+
+list.innerHTML=evidence.map(item=>`
+
+<div class="source">
+
+<strong>${escapeHTML(item.title)}</strong>
+
+<p>Case: ${escapeHTML(item.caseTitle)}</p>
+
+<p>${escapeHTML(item.finding)}</p>
+
+<p><b>Status:</b> ${escapeHTML(item.status)}</p>
+
+${item.url?`<a href="${escapeHTML(item.url)}" target="_blank" rel="noopener noreferrer">Open public source</a>`:"No URL provided"}
+
+<p class="small">Saved: ${escapeHTML(item.date)}</p>
+
+</div>
+
+`).join("");
+
+}
+
+displayEvidence();
+
+</script></body>
+</html>
