@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FACTLENS Report Generator</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f2f6f9;color:#10243a}
+header{background:#10243a;color:white;padding:22px}
+header h2{margin:0;letter-spacing:2px}
+header p{color:#00c8b5}
+main{max-width:800px;margin:auto;padding:18px}
+.card{background:white;padding:20px;margin:15px 0;border-radius:12px}
+input,textarea,select{width:100%;padding:12px;margin:8px 0;border:1px solid #ccd7df;border-radius:8px}
+textarea{min-height:100px}
+button{background:#00c8b5;color:#10243a;padding:13px;border:0;border-radius:8px;font-weight:bold;cursor:pointer;margin:5px 0}
+#preview{white-space:pre-wrap;line-height:1.6;background:#f7fafc;padding:18px;border:1px solid #dce5eb;border-radius:10px}
+</style>
+</head>
+<body>
+<header>
+<h2>FACTLENS</h2>
+<p>PROFESSIONAL RESEARCH REPORTS</p>
+</header>
+<main>
+<div class="card">
+<h2>📄 Create a Research Report</h2>
+<p>Prepare a clear report based on documented public sources.</p><label>Report title</label>
+<input id="title" placeholder="Enter report title">
+
+<label>Research subject</label>
+<input id="subject" placeholder="Business, organisation or public claim">
+
+<label>Research objective</label>
+
+<textarea id="objective" placeholder="What question did this research examine?"></textarea><label>Research findings</label>
+
+<textarea id="findings" placeholder="Write the findings supported by your sources"></textarea><label>Evidence limitations</label>
+
+<textarea id="limitations" placeholder="Explain what could not be verified or what remains uncertain"></textarea><label>Conclusion</label>
+
+<textarea id="conclusion" placeholder="Give a balanced conclusion"></textarea><label>Prepared by</label>
+<input id="author" placeholder="Researcher's name or business name">
+
+<button onclick="generate()">GENERATE REPORT</button>
+
+</div><div class="card">
+<h2>Report Preview</h2>
+<div id="preview">Your report will appear here.</div>
+<button onclick="downloadReport()">DOWNLOAD REPORT</button>
+<button onclick="window.print()">PRINT REPORT</button>
+</div>
+</main><script>
+let reportText="";
+
+function get(id){
+return document.getElementById(id).value.trim();
+}
+
+function generate(){
+let title=get("title");
+let subject=get("subject");
+let objective=get("objective");
+let findings=get("findings");
+let limitations=get("limitations");
+let conclusion=get("conclusion");
+let author=get("author");
+
+if(!title||!subject||!objective||!findings||!limitations||!conclusion){
+alert("Please complete all report fields.");
+return;
+}
+
+reportText=
+"FACTLENS — RESEARCH REPORT\n"+
+"================================\n\n"+
+"TITLE: "+title+"\n"+
+"SUBJECT: "+subject+"\n"+
+"PREPARED BY: "+(author||"Not specified")+"\n"+
+"DATE: "+new Date().toLocaleDateString()+"\n\n"+
+"1. RESEARCH OBJECTIVE\n"+objective+"\n\n"+
+"2. RESEARCH FINDINGS\n"+findings+"\n\n"+
+"3. LIMITATIONS\n"+limitations+"\n\n"+
+"4. CONCLUSION\n"+conclusion+"\n\n"+
+"DISCLAIMER\n"+
+"This report summarises the information and sources reviewed by the researcher. It is not a guarantee of identity, wrongdoing or future conduct. Findings should be independently verified before important decisions are made.\n";
+
+document.getElementById("preview").textContent=reportText;
+}
+
+function downloadReport(){
+if(!reportText){
+alert("Generate your report first.");
+return;
+}
+
+let file=new Blob([reportText],{type:"text/plain"});
+let link=document.createElement("a");
+link.href=URL.createObjectURL(file);
+link.download="FACTLENS-Research-Report.txt";
+link.click();
+URL.revokeObjectURL(link.href);
+}
+</script></body>
+</html>
