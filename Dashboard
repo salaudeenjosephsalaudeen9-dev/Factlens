@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FACTLENS Research Dashboard</title><style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f2f6f9;color:#10243a}
+header{background:#10243a;color:white;padding:20px}
+header h2{margin:0;letter-spacing:2px}
+header p{color:#00c8b5;margin-bottom:0}
+main{max-width:800px;margin:auto;padding:18px}
+.card{background:white;padding:20px;margin:15px 0;border-radius:12px}
+input,textarea,select{width:100%;padding:12px;margin:8px 0;border:1px solid #ccd7df;border-radius:8px}
+textarea{min-height:90px}
+button{background:#00c8b5;color:#10243a;padding:13px;border:0;border-radius:8px;font-weight:bold}
+.case{background:#edf5f7;padding:12px;margin:10px 0;border-radius:8px}
+.small{color:#617487;font-size:13px}
+</style></head><body><header>
+<h2>FACTLENS</h2>
+<p>RESEARCH DASHBOARD</p>
+</header><main><div class="card">
+<h2>Welcome, Researcher!</h2>
+<p>Manage your research cases and organise your findings.</p>
+</div><div class="card">
+<h3>📁 Create Research Case</h3><input id="title" placeholder="Research case title"><select id="category">
+<option>Business verification</option>
+<option>Public claim investigation</option>
+<option>Online seller research</option>
+<option>Public professional profile</option>
+</select><textarea id="details" placeholder="Describe what you want to research"></textarea><button onclick="createCase()">CREATE CASE</button>
+
+</div><div class="card">
+<h3>📚 Your Research Cases</h3>
+<div id="caseList">No cases created yet.</div>
+</div></main><script>
+let cases=JSON.parse(localStorage.getItem("factlensCases")||"[]");
+
+function createCase(){
+let title=document.getElementById("title").value.trim();
+let category=document.getElementById("category").value;
+let details=document.getElementById("details").value.trim();
+
+if(!title||!details){
+alert("Please complete the case title and description.");
+return;
+}
+
+cases.push({
+title:title,
+category:category,
+details:details,
+date:new Date().toLocaleDateString()
+});
+
+localStorage.setItem("factlensCases",JSON.stringify(cases));
+
+document.getElementById("title").value="";
+document.getElementById("details").value="";
+
+displayCases();
+}
+
+function displayCases(){
+let list=document.getElementById("caseList");
+
+if(cases.length===0){
+list.innerHTML="No cases created yet.";
+return;
+}
+
+list.innerHTML=cases.map(c=>`
+<div class="case">
+<strong>${escapeHTML(c.title)}</strong>
+<p>${escapeHTML(c.category)}</p>
+<p>${escapeHTML(c.details)}</p>
+<span class="small">Created: ${escapeHTML(c.date)}</span>
+</div>
+`).join("");
+}
+
+function escapeHTML(value){
+return String(value).replace(/[&<>"']/g,function(c){
+return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+});
+}
+
+displayCases();
+</script></body>
+</html>
